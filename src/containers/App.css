@@ -1,0 +1,10 @@
+@font-face {
+	font-family: 'Charmonman', cursive;
+	src: url('https://fonts.googleapis.com/css?family=Charmonman:700');
+}
+
+h1 {
+	font-family: 'Charmonman', cursive;
+	color: purple;
+	text-shadow: 3px 3px lightblue;
+}
