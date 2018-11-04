@@ -1,49 +1,42 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { setSearchField, requestCats } from "../action";
+
 import CardList from "../components/CardList";
 import Scroll from "../components/Scroll";
 import SearchBox from "../components/SearchBox";
-import "./App.css";
 import ErrorBoundary from "../components/ErrorBoundary";
-import { setSearchField } from "../action";
+
+import "./App.css";
 
 const mapStateToProps = state => {
   return {
-    searchField: state.searchField
+    searchField: state.searchCats.searchField,
+    cats: state.requestCats.cats,
+    isPending: state.requestCats.isPending
   };
 };
 
 //trigger the action
 const mapDispatchToProps = dispatch => {
   return {
-    onSearchChanges: event => dispatch(setSearchField(event.target.value))
+    onSearchChanges: event => dispatch(setSearchField(event.target.value)),
+    onRequestCats: () => dispatch(requestCats())
   };
 };
 
 class App extends Component {
-  //smart component
-  constructor() {
-    super();
-    this.state = {
-      cats: []
-    };
-  }
-
   componentDidMount() {
-    //get the user API from the web to get random users
-    fetch("http://jsonplaceholder.typicode.com/users")
-      .then(response => response.json())
-      .then(users => this.setState({ cats: users }));
+    this.props.onRequestCats();
   }
 
   render() {
-    const { cats } = this.state;
-    const { searchField, onSearchChanges } = this.props;
-    const filtercats = cats.filter(cat => {
+    const { cats, searchField, onSearchChanges, isPending } = this.props;
+    const filterCats = cats.filter(cat => {
       return cat.name.toLowerCase().includes(searchField.toLowerCase());
     });
 
-    return !cats.length ? (
+    return isPending ? (
       <h1>Loading</h1>
     ) : (
       <div className="tc">
@@ -51,7 +44,7 @@ class App extends Component {
         <SearchBox searchChange={onSearchChanges} />
         <Scroll>
           <ErrorBoundary>
-            <CardList cats={filtercats} />;
+            <CardList cats={filterCats} />;
           </ErrorBoundary>
         </Scroll>
       </div>
